@@ -1,1 +1,3 @@
-docker run nats-streaming -p 4222 -m 8223
+Программа запускается так
+docker run -d -p 4222:4222 -p 8222:8222 nats-streaming
+затем 

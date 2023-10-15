@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -15,8 +16,9 @@ func CheckError(err error) {
 }
 
 
-func GenerateRandomOrder() schemas.Order {
-	return schemas.Order{
+func GenerateRandomOrder() []byte {
+	if rand.Intn(10) >= 3 {
+	order := schemas.Order{
 		OrderUID:    generateRandomString(19),
 		TrackNumber: generateRandomString(10),
 		Entry:       generateRandomString(5),
@@ -63,6 +65,11 @@ func GenerateRandomOrder() schemas.Order {
 		DateCreated:     time.Now(),
 		OofShard:        generateRandomString(1),
 	}
+	data, _ := json.MarshalIndent(order, "", " ")
+	return data
+	} else {
+		return GenerateTrashData()
+	}
 }
 
 func generateRandomString(length int) string {
@@ -84,3 +91,12 @@ func generateRandomPhoneNumber() string {
 }
 
 
+func GenerateTrashData() []byte {
+	length := rand.Intn(1000)
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return b
+}

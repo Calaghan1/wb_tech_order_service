@@ -2,8 +2,8 @@ package database
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
+	"sync"
 
 	"github.com/Calaghan1/wb_tech_order_service.git/helpers"
 	"github.com/Calaghan1/wb_tech_order_service.git/schemas"
@@ -12,12 +12,6 @@ import (
 )
 
 func Init_database(acces_data string) *gorm.DB {
-	// db, err := sql.Open("postgres", acces_data)
-	// helpers.CheckError(err)
-	// _, err = db.Exec("SET NAMES 'UTF8'")
-	// helpers.CheckError(err)
-	// err = db.Ping()
-	// helpers.CheckError(err)
 	db, err := gorm.Open(postgres.Open(acces_data), &gorm.Config{})
 	helpers.CheckError(err)
 	db.AutoMigrate(&schemas.Order{}, &schemas.Delivery{}, &schemas.Payment{}, &schemas.Item{})
@@ -42,21 +36,21 @@ func GetAllOrders(db * gorm.DB) []schemas.Order {
 	return orders
 }
 
-func PringMSg(ch chan []byte) {
-	for data := range ch {
-		fmt.Println(string(data))
-	}
-}
-
-func UpdateDb(ch chan []byte, db *gorm.DB, cahe map[int]schemas.Order) {
+func UpdateDb(ch chan []byte, db *gorm.DB, cahe map[int]schemas.Order, mutex *sync.Mutex) {
 	for data := range ch {
 		var order schemas.Order
-		json.Unmarshal(data, &order)
+		err := json.Unmarshal(data, &order)
+		if err != nil {
+			log.Println("TRASH DATA NOT SAVED")
+		} else {
+		mutex.Lock()
 		psdata := db.Create(&order)
 		helpers.CheckError(psdata.Error)
 		cahe[order.ID] = order
 		log.Println("DATABASE UPDATED")
+		mutex.Unlock()
 	}
+}
 }
 
 func MakeCache(db *gorm.DB) map[int]schemas.Order {
@@ -67,3 +61,4 @@ func MakeCache(db *gorm.DB) map[int]schemas.Order {
 	}
 	return cache
 }
+

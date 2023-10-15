@@ -1,8 +1,8 @@
 package producer
 
 import (
-	"encoding/json"
 	"log"
+	"os"
 	"time"
 
 	"github.com/Calaghan1/wb_tech_order_service.git/helpers"
@@ -12,15 +12,14 @@ import (
 
 
 func SendRandomData() {
-	sc, err := stan.Connect("test-cluster", "client-1")
+	
+	sc, err := stan.Connect(os.Getenv("NATS_STRIMNG_CLASTER"), os.Getenv("NATS_STRIMNG_CLIENT_ID_PROD"))
 	helpers.CheckError(err)
 	defer sc.Close()
 	for true {
-		order := helpers.GenerateRandomOrder()
-		data, err := json.MarshalIndent(order, "", " ")
-		helpers.CheckError(err)
+		data := helpers.GenerateRandomOrder()
 		err = sc.Publish("Orders", data)
-		time.Sleep(5 * time.Second)
 		log.Println("PRIDUCER SEND MASSAGE")
+		time.Sleep(time.Second * 3)
 	}
 }
