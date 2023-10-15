@@ -20,6 +20,6 @@ func SendRandomData() {
 		data := helpers.GenerateRandomOrder()
 		err = sc.Publish("Orders", data)
 		log.Println("PRIDUCER SEND MASSAGE")
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second / 10)
 	}
 }
