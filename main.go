@@ -54,7 +54,7 @@ func main() {
 	ch := make(chan []byte, 10)
 	sub, _ := sc.Subscribe("Orders", func(m *stan.Msg,) {
 		ch <- m.Data
-		log.Println("SUBSCRIBER RECIVE MASSAGE")
+		log.Println("Subscriber receives a message.")
 	}, stan.DurableName("Test"))
 	defer sub.Unsubscribe()	
 	go producer.SendRandomData()

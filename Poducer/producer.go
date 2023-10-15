@@ -19,7 +19,7 @@ func SendRandomData() {
 	for true {
 		data := helpers.GenerateRandomOrder()
 		err = sc.Publish("Orders", data)
-		log.Println("PRIDUCER SEND MASSAGE")
-		time.Sleep(time.Second / 10)
+		log.Println("Producer sends a message.")
+		time.Sleep(time.Second * 1)
 	}
 }
