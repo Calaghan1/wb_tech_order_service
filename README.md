@@ -1,1 +1,1 @@
-na hui poslan
+docker run nats-streaming -p 4222 -m 8223
